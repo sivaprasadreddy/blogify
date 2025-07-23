@@ -6,6 +6,8 @@ Blogify is a Spring AI playground project to try out various features:
 * ChatMemory
 * MCP
 
+![blogify.png](blogify.png)
+
 ## Prerequisites
 * Java 24
 * Docker, Docker Compose
