@@ -1,0 +1,19 @@
+<div>
+    <h2>Evaluation Result</h2>
+    <div class="card">
+        <div class="card-body">
+            <h4>Summary:</h4>
+            <div th:utext="${evaluationResponseHtml}">
+                Content
+            </div>
+            <h4>Issues</h4>
+            <p th:if="${evaluationResponse.issues().isEmpty()}">
+                No issues found
+            </p>
+            <ul>
+                <li th:each="issue : ${evaluationResponse.issues()}"
+                    th:text="${issue}">Issue</li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Generate Ideas</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section id="generate-ideas" class="dashboard-section">
+        <h2>Generate Ideas</h2>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" th:action="@{/generate-ideas}" th:object="${topic}">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Topic</label>
+                        <textarea class="form-control" id="subject"
+                                  name="subject"
+                                  th:field="*{subject}"
+                                  placeholder="Enter a topic to generate ideas">
+                        </textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="audience" class="form-label">Target Audience</label>
+                        <select class="form-select" id="audience" name="audience"
+                                th:field="*{audience}">
+                            <option selected value="">Choose target audience</option>
+                            <option value="beginners">Beginners</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="count" class="form-label">Number of Ideas</label>
+                        <input class="form-control" id="count"
+                                  name="count"
+                                  th:field="*{count}"
+                                  type="number"
+                                  min="1" max="10"
+                                  placeholder="How many ideas to generate?">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Ideas</button>
+                </form>
+
+                <div class="mt-4" th:if="${ideas != null}">
+                    <h5>Generated Ideas:</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-start"
+                            th:each="idea : ${ideas}">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold" th:text="${idea.title}">Idea Title</div>
+                                <div th:utext="${idea.briefDescription}">description</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>

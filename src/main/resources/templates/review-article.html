@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Review Article</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section id="review-article" class="dashboard-section">
+        <h2>Review Article</h2>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" th:action="@{/update-article}" th:object="${article}">
+                    <input type="hidden" name="id" th:value="${article.id}"/>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input class="form-control" id="title" name="title" th:field="*{title}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="slug" class="form-label">Slug</label>
+                        <input class="form-control" id="slug" name="slug" th:field="*{slug}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="categories" class="form-label">Categories</label>
+                        <input class="form-control" id="categories" name="categories" th:field="*{categories}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input class="form-control" id="tags" name="tags" th:field="*{tags}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Content</label>
+                        <textarea class="form-control" id="content" name="content" rows="10"
+                                  th:field="*{content}"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="enhancedContent" class="form-label">Enhanced Content</label>
+                        <textarea class="form-control" id="enhancedContent" name="enhancedContent" rows="10"
+                                  th:field="*{enhancedContent}"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+
+                    <a class="btn btn-success" th:href="@{/articles/{id}/enhance(id=${article.id})}">Enhance</a>
+
+                    <button type="button" class="btn btn-dark"
+                        th:hx-get="@{/articles/{id}/evaluate(id=${article.id})}"
+                        hx-target="#evaluation-result">Evaluate Original</button>
+
+                    <button type="button" class="btn btn-secondary"
+                            th:hx-get="@{/articles/{id}/evaluate?enhanced=true(id=${article.id})}"
+                            hx-target="#evaluation-result">Evaluate Enhanced</button>
+
+                    <button type="button" class="btn btn-warning"
+                            th:hx-post="@{/articles/{id}/publish(id=${article.id})}"
+                            hx-swap="none"
+                            hx-on:htmx:after-request="
+                                if (event.detail.successful) {
+                                  //alert('Article published successfully');
+                                  Swal.fire({
+                                    title: 'Good job!',
+                                    text: 'Article published successfully!',
+                                    icon: 'success'
+                                  });
+                                }
+                            ">Publish Original</button>
+
+                    <button type="button" class="btn btn-info"
+                            th:hx-post="@{/articles/{id}/publish?enhanced=true(id=${article.id})}"
+                            hx-swap="none"
+                            hx-on:htmx:after-request="
+                                if (event.detail.successful) {
+                                  //alert('Article published successfully');
+                                  Swal.fire({
+                                    title: 'Good job!',
+                                    text: 'Article published successfully!',
+                                    icon: 'success'
+                                  });
+                                }
+                            ">Publish Enhanced</button>
+
+                </form>
+            </div>
+        </div>
+    </section>
+    <section id="evaluation-result" class="dashboard-section">
+
+    </section>
+    <section id="article-preview" class="dashboard-section">
+        <h2>Original Article Preview</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="" th:utext="${articleContentHtml}">
+                    Html Content
+                </div>
+            </div>
+        </div>
+        <h2>Enhanced Article Preview</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="" th:utext="${enhancedArticleContentHtml}">
+                    Html Content
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>

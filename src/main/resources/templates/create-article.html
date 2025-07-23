@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Create Article</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <section id="create-article" class="dashboard-section active">
+        <h2>Create Article</h2>
+        <div class="card">
+            <div class="card-body">
+                <form method="post" th:action="@{/create-article}">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Topic</label>
+                        <textarea class="form-control" id="topic" name="topic" rows="10"
+                                  placeholder="Write your article topic idea here"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Article</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
