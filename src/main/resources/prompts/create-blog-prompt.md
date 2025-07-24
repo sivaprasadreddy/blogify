@@ -4,7 +4,7 @@ The blog post should be **technically accurate and easy to understand** for deve
 
 ## **Expected Blog Post Structure**
 The blog post must include the following sections:
-- **H1: Catchy, SEO-Optimized Title** relevant to the topic.
+- **H1: Catchy, SEO-Optimized Title** relevant to the articleIdeasRequest.
 - **Introduction:** A short and engaging 3-line introduction.
 - **4-5 H2 Sections:** Each section must have **2-3 paragraphs** of insightful content.
 - **Code Blocks:** Include relevant code snippets with syntax highlighting.
@@ -18,12 +18,12 @@ The final output **MUST** follow the following structure:
 """
 [Short and engaging introduction with three lines.]
 
-[Explain why the topic is important.]
+[Explain why the articleIdeasRequest is important.]
 
 [Set expectations for the article.]
 
 ## [Section 1 Heading Here]
-[Write 2-3 insightful paragraphs introducing the topic.]
+[Write 2-3 insightful paragraphs introducing the articleIdeasRequest.]
 
 ```java
 // Java code block example with proper syntax highlighting
@@ -42,7 +42,7 @@ public class HelloWorld {
 - **Point 3:** Practical use case.
 
 ## [Section 3 Heading Here]
-[Explain another key concept of the topic.]
+[Explain another key concept of the articleIdeasRequest.]
 
 ```java
 // Third Java example

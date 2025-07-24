@@ -1,7 +1,7 @@
 package com.sivalabs.blogify.web;
 
-import com.sivalabs.blogify.domain.ArticleService;
-import com.sivalabs.blogify.domain.Topic;
+import com.sivalabs.blogify.agents.ArticleAgent;
+import com.sivalabs.blogify.agents.ArticleIdeasRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -13,22 +13,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 class BlogIdeasController {
     private static final Logger log = LoggerFactory.getLogger(BlogIdeasController.class);
-    private final ArticleService articleService;
+    private final ArticleAgent articleAgent;
 
-    BlogIdeasController(ArticleService articleService) {
-        this.articleService = articleService;
+    BlogIdeasController(ArticleAgent articleAgent) {
+        this.articleAgent = articleAgent;
     }
 
     @GetMapping("/generate-ideas")
     String showGenerateIdeasPage(Model model) {
-        model.addAttribute("topic", new Topic("", "", 3));
+        model.addAttribute("articleIdeasRequest", new ArticleIdeasRequest("", "", 3));
         return "generate-ideas";
     }
 
     @PostMapping("/generate-ideas")
-    String showGeneratedIdeas(@ModelAttribute("topic") Topic topic, Model model) {
-        log.info("Generating ideas on topic: '{}' for '{}' audience", topic.subject(), topic.audience());
-        var ideas = articleService.generateIdeas(topic);
+    String showGeneratedIdeas(@ModelAttribute("articleIdeasRequest") ArticleIdeasRequest articleIdeasRequest, Model model) {
+        log.info("Generating ideas on articleIdeasRequest: '{}' for '{}' audience", articleIdeasRequest.subject(), articleIdeasRequest.audience());
+        var ideas = articleAgent.generateIdeas(articleIdeasRequest);
         model.addAttribute("ideas", ideas);
         return "generate-ideas";
     }

@@ -1,4 +1,4 @@
-package com.sivalabs.blogify.web;
+package com.sivalabs.blogify.domain;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;

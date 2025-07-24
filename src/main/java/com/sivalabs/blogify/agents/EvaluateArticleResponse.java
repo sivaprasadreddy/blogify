@@ -1,4 +1,4 @@
-package com.sivalabs.blogify.domain;
+package com.sivalabs.blogify.agents;
 
 import java.util.List;
 

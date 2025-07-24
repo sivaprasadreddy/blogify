@@ -2,11 +2,12 @@ package com.sivalabs.blogify.web;
 
 import com.sivalabs.blogify.domain.Article;
 import com.sivalabs.blogify.domain.ArticleRepository;
-import com.sivalabs.blogify.domain.GenerateArticleRequest;
-import com.sivalabs.blogify.domain.ArticleResponse;
-import com.sivalabs.blogify.domain.ArticleService;
-import com.sivalabs.blogify.domain.EnhanceArticleResponse;
-import com.sivalabs.blogify.domain.EvaluateArticleResponse;
+import com.sivalabs.blogify.agents.GenerateArticleRequest;
+import com.sivalabs.blogify.agents.ArticleResponse;
+import com.sivalabs.blogify.agents.ArticleAgent;
+import com.sivalabs.blogify.agents.EnhanceArticleResponse;
+import com.sivalabs.blogify.agents.EvaluateArticleResponse;
+import com.sivalabs.blogify.domain.MarkdownHelper;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -28,11 +29,11 @@ class ArticleController {
     private static final Logger log = LoggerFactory.getLogger(ArticleController.class);
 
     private final ArticleRepository articleRepository;
-    private final ArticleService articleService;
+    private final ArticleAgent articleAgent;
 
-    ArticleController(ArticleRepository articleRepository, ArticleService articleService) {
+    ArticleController(ArticleRepository articleRepository, ArticleAgent articleAgent) {
         this.articleRepository = articleRepository;
-        this.articleService = articleService;
+        this.articleAgent = articleAgent;
     }
 
     @GetMapping("/create-article")
@@ -44,7 +45,7 @@ class ArticleController {
     @PostMapping("/create-article")
     String createArticle(GenerateArticleRequest request, Model model) {
         log.debug("Generate blog post for topic: '{}' and audience: '{}'", request.topic(), request.audience());
-        ArticleResponse response = articleService.generateArticle(request);
+        ArticleResponse response = articleAgent.generateArticle(request);
         //log.info("Generated blog content: {}", response);
         Article article = saveArticle(request, response);
         //ArticleUtils.writeArticleToMarkdownFile(article);
@@ -98,7 +99,7 @@ class ArticleController {
                                   @RequestParam(name = "enhanced", defaultValue = "false") boolean enhanced,
                                   Model model) {
         Article article = articleRepository.findById(id).orElseThrow();
-        EvaluateArticleResponse evaluateArticleResponse = articleService.evaluateArticle(article, enhanced);
+        EvaluateArticleResponse evaluateArticleResponse = articleAgent.evaluateArticle(article, enhanced);
         String evaluationResponseHtml = MarkdownHelper.toHTML(evaluateArticleResponse.summary());
         model.addAttribute("evaluationResponse", evaluateArticleResponse);
         model.addAttribute("evaluationResponseHtml", evaluationResponseHtml);
@@ -108,7 +109,7 @@ class ArticleController {
     @GetMapping("/articles/{id}/enhance")
     public String enhanceArticle(@PathVariable Long id, Model model) {
         Article article = articleRepository.findById(id).orElseThrow();
-        EnhanceArticleResponse enhanceArticleResponse = articleService.enhanceArticle(article);
+        EnhanceArticleResponse enhanceArticleResponse = articleAgent.enhanceArticle(article);
         article.setEnhancedContent(enhanceArticleResponse.content());
         articleRepository.save(article);
         return "redirect:/articles/"+id;
@@ -121,7 +122,7 @@ class ArticleController {
                                  @RequestParam(name = "enhanced", defaultValue = "false") boolean enhanced,
                                  Model model) {
         Article article = articleRepository.findById(id).orElseThrow();
-        articleService.publishArticle(article, enhanced);
+        articleAgent.publishArticle(article, enhanced);
         return "success";
     }
 

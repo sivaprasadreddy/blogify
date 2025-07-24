@@ -12,7 +12,7 @@
         <h2>Generate Ideas</h2>
         <div class="card">
             <div class="card-body">
-                <form method="post" th:action="@{/generate-ideas}" th:object="${topic}">
+                <form method="post" th:action="@{/generate-ideas}" th:object="${articleIdeasRequest}">
                     <div class="mb-3">
                         <label for="subject" class="form-label">Topic</label>
                         <textarea class="form-control" id="subject"

@@ -1,6 +1,8 @@
-package com.sivalabs.blogify.domain;
+package com.sivalabs.blogify.agents;
 
 import com.sivalabs.blogify.ApplicationProperties;
+import com.sivalabs.blogify.domain.Article;
+import com.sivalabs.blogify.domain.ArticleUtils;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -12,20 +14,20 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ArticleService {
+public class ArticleAgent {
     private final ChatClient openAiChatClient;
     private final ChatClient verifierChatClient;
     private final ApplicationProperties properties;
 
-    public ArticleService(@Qualifier("openAiChatClient") ChatClient openAiChatClient,
-                          @Qualifier("verifierChatClient") ChatClient verifierChatClient, ApplicationProperties properties
+    public ArticleAgent(@Qualifier("openAiChatClient") ChatClient openAiChatClient,
+                        @Qualifier("verifierChatClient") ChatClient verifierChatClient, ApplicationProperties properties
     ) {
         this.openAiChatClient = openAiChatClient;
         this.verifierChatClient = verifierChatClient;
         this.properties = properties;
     }
 
-    public List<Idea> generateIdeas(Topic topic) {
+    public List<ArticleIdea> generateIdeas(ArticleIdeasRequest articleIdeasRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(
                 """
                 Generate {count} blog post titles with brief description of what will be covered in that post
@@ -37,9 +39,9 @@ public class ArticleService {
                 """
         );
         Map<String, Object> params = Map.of(
-                "count", topic.count(),
-                "subject", topic.subject(),
-                "audience", topic.audience()
+                "count", articleIdeasRequest.count(),
+                "subject", articleIdeasRequest.subject(),
+                "audience", articleIdeasRequest.audience()
         );
         Prompt prompt = promptTemplate.create(params);
         return openAiChatClient.prompt(prompt).call()
@@ -49,7 +51,7 @@ public class ArticleService {
     public ArticleResponse generateArticle(GenerateArticleRequest request) {
         return openAiChatClient.prompt()
                 .system(properties.getCreateBlogPrompt())
-                .user("Topic is :" + request.topic())
+                .user("ArticleIdeasRequest is :" + request.topic())
                 .call().
                 entity(ArticleResponse.class);
     }
