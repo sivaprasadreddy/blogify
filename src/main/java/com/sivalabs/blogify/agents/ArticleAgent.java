@@ -15,27 +15,25 @@ import java.util.Map;
 
 @Service
 public class ArticleAgent {
-    private final ChatClient openAiChatClient;
+    private final ChatClient generatorChatClient;
     private final ChatClient verifierChatClient;
     private final ApplicationProperties properties;
 
-    public ArticleAgent(@Qualifier("openAiChatClient") ChatClient openAiChatClient,
+    public ArticleAgent(@Qualifier("generatorChatClient") ChatClient generatorChatClient,
                         @Qualifier("verifierChatClient") ChatClient verifierChatClient, ApplicationProperties properties
     ) {
-        this.openAiChatClient = openAiChatClient;
+        this.generatorChatClient = generatorChatClient;
         this.verifierChatClient = verifierChatClient;
         this.properties = properties;
     }
 
-    public List<ArticleIdea> generateIdeas(ArticleIdeasRequest articleIdeasRequest) {
+    public ArticleIdeas generateIdeas(ArticleIdeasRequest articleIdeasRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(
                 """
                 Generate {count} blog post titles with brief description of what will be covered in that post
                 for {audience} audience on the following subject:
                 
                 {subject}
-                
-                Keep the title short and intriguing.
                 """
         );
         Map<String, Object> params = Map.of(
@@ -44,16 +42,22 @@ public class ArticleAgent {
                 "audience", articleIdeasRequest.audience()
         );
         Prompt prompt = promptTemplate.create(params);
-        return openAiChatClient.prompt(prompt).call()
-                .entity(new ParameterizedTypeReference<>() {});
+        return generatorChatClient.prompt(prompt).call()
+                .entity(ArticleIdeas.class);
     }
 
     public ArticleResponse generateArticle(GenerateArticleRequest request) {
-        return openAiChatClient.prompt()
+        return generatorChatClient.prompt()
                 .system(properties.getCreateBlogPrompt())
-                .user("ArticleIdeasRequest is :" + request.topic())
-                .call().
-                entity(ArticleResponse.class);
+                .user(u->
+                    u.text("""
+                        Generate an article for the following request:
+                        
+                        {topic}
+                        """)
+                        .param("topic", request.topic()))
+                .call()
+                .entity(ArticleResponse.class);
     }
 
     public EvaluateArticleResponse evaluateArticle(Article article, boolean enhanced) {
@@ -77,7 +81,7 @@ public class ArticleAgent {
     }
 
     public EnhanceArticleResponse enhanceArticle(Article article) {
-        return openAiChatClient.prompt()
+        return generatorChatClient.prompt()
                 .system(properties.getEnhanceBlogPrompt())
                 .user(p -> p
                         .text("""
@@ -92,7 +96,7 @@ public class ArticleAgent {
 
     public String publishArticle(Article article, boolean enhanced) {
         String articleContent = ArticleUtils.generateHugoArticle(article, enhanced);
-        return openAiChatClient.prompt()
+        return generatorChatClient.prompt()
             .system(p -> p.text("You are a helper to publish article content to github"))
             .user(p -> p
                 .text("""

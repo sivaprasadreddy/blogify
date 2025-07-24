@@ -4,9 +4,9 @@ import com.sivalabs.blogify.ApplicationProperties;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaApi;
+import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +21,8 @@ class AIConfig {
     }
 
     @Bean
-    @Qualifier("openAiChatClient")
-    ChatClient openAiChatClient(OpenAiChatModel chatModel,
+    @Qualifier("generatorChatClient")
+    ChatClient generatorChatClient(OllamaChatModel chatModel,
                                 ToolCallbackProvider tools,
                                 ChatMemory chatMemory) {
         ChatClient.Builder builder = ChatClient.builder(chatModel);
@@ -38,21 +38,19 @@ class AIConfig {
 
     @Bean
     @Qualifier("verifierChatClient")
-    ChatClient verifierChatClient(OpenAiChatModel chatModel,
+    ChatClient verifierChatClient(OllamaChatModel chatModel,
                                 ToolCallbackProvider tools,
                                 ChatMemory chatMemory) {
-        OpenAiApi openAiApi = OpenAiApi.builder()
+        OllamaApi ollamaApi = OllamaApi.builder()
                 .baseUrl(properties.getVerifierBaseUrl())
-                .apiKey(properties.getVerifierApiKey())
-                .completionsPath(properties.getVerifierCompletionsPath())
                 .build();
-        OpenAiChatOptions defaultOptions = OpenAiChatOptions.builder()
+        OllamaOptions defaultOptions = OllamaOptions.builder()
                     .model(properties.getVerifierModel())
                     .temperature(0.7)
                     .build();
 
-        OpenAiChatModel verifierChatModel = chatModel.mutate()
-                .openAiApi(openAiApi)
+        OllamaChatModel verifierChatModel = OllamaChatModel.builder()
+                .ollamaApi(ollamaApi)
                 .defaultOptions(defaultOptions)
                 .build();
 

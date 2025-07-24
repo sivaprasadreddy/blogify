@@ -28,7 +28,7 @@ class BlogIdeasController {
     @PostMapping("/generate-ideas")
     String showGeneratedIdeas(@ModelAttribute("articleIdeasRequest") ArticleIdeasRequest articleIdeasRequest, Model model) {
         log.info("Generating ideas on articleIdeasRequest: '{}' for '{}' audience", articleIdeasRequest.subject(), articleIdeasRequest.audience());
-        var ideas = articleAgent.generateIdeas(articleIdeasRequest);
+        var ideas = articleAgent.generateIdeas(articleIdeasRequest).ideas();
         model.addAttribute("ideas", ideas);
         return "generate-ideas";
     }
