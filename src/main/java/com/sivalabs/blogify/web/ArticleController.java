@@ -2,11 +2,11 @@ package com.sivalabs.blogify.web;
 
 import com.sivalabs.blogify.domain.Article;
 import com.sivalabs.blogify.domain.ArticleRepository;
-import com.sivalabs.blogify.domain.ArticleRequest;
+import com.sivalabs.blogify.domain.GenerateArticleRequest;
 import com.sivalabs.blogify.domain.ArticleResponse;
 import com.sivalabs.blogify.domain.ArticleService;
-import com.sivalabs.blogify.domain.EnhanceResponse;
-import com.sivalabs.blogify.domain.EvaluationResponse;
+import com.sivalabs.blogify.domain.EnhanceArticleResponse;
+import com.sivalabs.blogify.domain.EvaluateArticleResponse;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -37,14 +37,15 @@ class ArticleController {
 
     @GetMapping("/create-article")
     String showCreateArticlePage(Model model) {
-        model.addAttribute("request", new ArticleRequest("", ""));
+        model.addAttribute("request", new GenerateArticleRequest("", ""));
         return "create-article";
     }
 
     @PostMapping("/create-article")
-    String createArticle(ArticleRequest request, Model model) {
+    String createArticle(GenerateArticleRequest request, Model model) {
+        log.debug("Generate blog post for topic: '{}' and audience: '{}'", request.topic(), request.audience());
         ArticleResponse response = articleService.generateArticle(request);
-        log.info("Generated blog content: {}", response);
+        //log.info("Generated blog content: {}", response);
         Article article = saveArticle(request, response);
         //ArticleUtils.writeArticleToMarkdownFile(article);
         return "redirect:/articles/"+article.getId();
@@ -96,20 +97,19 @@ class ArticleController {
     public String evaluateArticle(@PathVariable Long id,
                                   @RequestParam(name = "enhanced", defaultValue = "false") boolean enhanced,
                                   Model model) {
-        EvaluationResponse evaluationResponse = articleService.evaluateArticle(id, enhanced);
-        System.out.println("evaluationResponse = " + evaluationResponse);
-        String evaluationResponseHtml = MarkdownHelper.toHTML(evaluationResponse.summary());
-        model.addAttribute("evaluationResponse", evaluationResponse);
+        Article article = articleRepository.findById(id).orElseThrow();
+        EvaluateArticleResponse evaluateArticleResponse = articleService.evaluateArticle(article, enhanced);
+        String evaluationResponseHtml = MarkdownHelper.toHTML(evaluateArticleResponse.summary());
+        model.addAttribute("evaluationResponse", evaluateArticleResponse);
         model.addAttribute("evaluationResponseHtml", evaluationResponseHtml);
         return "evaluation-result";
     }
 
     @GetMapping("/articles/{id}/enhance")
     public String enhanceArticle(@PathVariable Long id, Model model) {
-        EnhanceResponse enhanceResponse = articleService.enhanceArticle(id);
-        System.out.println("enhanceResponse = " + enhanceResponse);
         Article article = articleRepository.findById(id).orElseThrow();
-        article.setEnhancedContent(enhanceResponse.content());
+        EnhanceArticleResponse enhanceArticleResponse = articleService.enhanceArticle(article);
+        article.setEnhancedContent(enhanceArticleResponse.content());
         articleRepository.save(article);
         return "redirect:/articles/"+id;
     }
@@ -120,12 +120,12 @@ class ArticleController {
     public String publishArticle(@PathVariable Long id,
                                  @RequestParam(name = "enhanced", defaultValue = "false") boolean enhanced,
                                  Model model) {
-        String publishResponse = articleService.publishArticle(id, enhanced);
-        System.out.println("publishResponse = " + publishResponse);
+        Article article = articleRepository.findById(id).orElseThrow();
+        articleService.publishArticle(article, enhanced);
         return "success";
     }
 
-    private Article saveArticle(ArticleRequest request, ArticleResponse response) {
+    private Article saveArticle(GenerateArticleRequest request, ArticleResponse response) {
         Article article = new Article();
         article.setPrompt(request.topic());
         article.setTitle(response.title());
