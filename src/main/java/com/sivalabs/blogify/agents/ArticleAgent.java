@@ -27,7 +27,7 @@ public class ArticleAgent {
         this.properties = properties;
     }
 
-    public List<ArticleIdea> generateIdeas(ArticleIdeasRequest articleIdeasRequest) {
+    public ArticleIdeas generateIdeas(ArticleIdeasRequest articleIdeasRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(
                 """
                 Generate {count} blog post titles with brief description of what will be covered in that post
@@ -44,14 +44,20 @@ public class ArticleAgent {
                 "audience", articleIdeasRequest.audience()
         );
         Prompt prompt = promptTemplate.create(params);
-        return openAiChatClient.prompt(prompt).call()
-                .entity(new ParameterizedTypeReference<>() {});
+        return openAiChatClient.prompt(prompt)
+                .call()
+                .entity(ArticleIdeas.class);
     }
 
     public ArticleResponse generateArticle(GenerateArticleRequest request) {
         return openAiChatClient.prompt()
                 .system(properties.getCreateBlogPrompt())
-                .user("ArticleIdeasRequest is :" + request.topic())
+                .user(u -> u.text("""
+                        Generate an article for the following request:
+                        
+                        {topic}
+                        """)
+                        .param("topic", request.topic()))
                 .call().
                 entity(ArticleResponse.class);
     }
