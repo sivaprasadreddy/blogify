@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.5</version>
         <relativePath/>
     </parent>
     <groupId>com.sivalabs</groupId>
@@ -16,18 +16,18 @@
     <name>blogify</name>
 
     <properties>
-        <java.version>24</java.version>
-        <spring-ai.version>1.0.0</spring-ai.version>
-        <htmx-spring-boot.version>4.0.1</htmx-spring-boot.version>
-        <bootstrap.version>5.3.6</bootstrap.version>
+        <java.version>25</java.version>
+        <spring-ai.version>2.0.0-M4</spring-ai.version>
+        <groovy.version>4.0.30</groovy.version>
+        <bootstrap.version>5.3.8</bootstrap.version>
         <htmx.version>2.0.4</htmx.version>
         <jquery.version>3.7.1</jquery.version>
-        <font-awesome.version>6.7.2</font-awesome.version>
+        <font-awesome.version>7.0.1</font-awesome.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -42,8 +42,8 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -65,12 +65,12 @@
         <dependency>
             <groupId>io.github.wimdeblauwe</groupId>
             <artifactId>htmx-spring-boot-thymeleaf</artifactId>
-            <version>4.0.1</version>
+            <version>5.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.25.0</version>
+            <version>0.27.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -150,7 +150,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -165,13 +165,18 @@
         </dependency>-->
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
+            <artifactId>testcontainers-postgresql</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <classifier>osx-aarch_64</classifier>
         </dependency>
     </dependencies>
     <dependencyManagement>

@@ -22,8 +22,8 @@ public class ArticleUtils {
             throw new IllegalArgumentException("Content is required");
         }
         String publishedDate = OffsetDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx"));
-        String categories = String.join(", ", article.getCategories());
-        String tags = String.join(", ", article.getTags());
+        String categories = String.join(", ", article.getCategories().stream().map(it -> '"' + it + '"').toList());
+        String tags = String.join(", ", article.getTags().stream().map(it -> '"' + it + '"').toList());
         String image = article.getImages() == null || article.getImages().isEmpty() ? "" : article.getImages().getFirst();
         String slug = article.getSlug();
         if (slug.startsWith("/")) {

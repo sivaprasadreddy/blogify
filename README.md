@@ -9,7 +9,7 @@ Blogify is a Spring AI playground project to try out various features:
 ![blogify.png](blogify.png)
 
 ## Prerequisites
-* Java 24
+* Java 25
 * Docker, Docker Compose
 * OpenAI API Key
 * OpenAI compatible LLM(Groq, Gemini, etc) API Key
